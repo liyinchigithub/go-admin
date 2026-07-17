@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  etcd:
+    image: bitnami/etcd:3.5
+    container_name: go-admin-etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd_data:/bitnami/etcd
+    networks:
+      - go-admin-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: go-admin-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: go_admin
+      MYSQL_USER: goadmin
+      MYSQL_PASSWORD: goadmin123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../../config/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - go-admin-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  redis:
+    image: redis:7-alpine
+    container_name: go-admin-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - go-admin-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: go-admin-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - go-admin-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: go-admin-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - go-admin-network
+    depends_on:
+      - prometheus
+
+volumes:
+  etcd_data:
+  mysql_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  go-admin-network:
+    driver: bridge
