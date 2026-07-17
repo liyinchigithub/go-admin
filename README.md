@@ -15,6 +15,10 @@
 
 [前端项目](https://github.com/go-admin-team/go-admin-ui)
 
+[前端项目 Vue3](https://github.com/liyinchigithub/go-admin-vue3)
+
+[前端项目 Vue2](https://github.com/liyinchigithub/go-admin-ui)
+
 [视频教程](https://space.bilibili.com/565616721/channel/detail?cid=125737)
 
 ## 🎬 在线体验
